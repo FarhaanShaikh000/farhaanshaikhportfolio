@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farhaan Shaikh | Cinematic Portfolio</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,600&family=Outfit:wght@300;400;500;600&family=Bangers&display=swap" rel="stylesheet">
+    
+    <!-- GSAP Core & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        /* ─────────────────────────────────────────
+           STRICT COLOR PALETTE & VARIABLES
+        ───────────────────────────────────────── */
+        :root {
+            --cream: #F5F0E8;
+            --beige: #E8DCC8;
+            --gold: #C9A84C;
+            --gold-light: #E8C97A;
+            --deep: #0D0D0D;
+            --ink: #1A1612;
+            --soft-white: #F5F0E8;
+            
+            --glow-gold: 0 0 35px rgba(201, 168, 76, 0.35);
+            --glass-bg: rgba(232, 220, 200, 0.06);
+            --trans-smooth: all 0.7s cubic-bezier(0.25, 1, 0.2, 1);
+        }
+
+        /* ─────────────────────────────────────────
+           RESET, GLOBAL & HARDWARE ACCELERATION
+        ───────────────────────────────────────── */
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+        html { scroll-behavior: auto; scroll-padding-top: 100px; }
+        body { background-color: var(--deep); color: var(--soft-white); font-family: 'Outfit', sans-serif; overflow-x: hidden; line-height: 1.6; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; transition: background-color 0.8s ease, color 0.8s ease; }
+        body.theme-light { background-color: var(--cream); color: var(--ink); }
+        h1, h2, h3, h4, h5, .serif { font-family: 'Cormorant Garamond', serif; font-weight: 400; }
+        a { color: inherit; text-decoration: none; }
+
+        /* GPU Optimization Classes */
+        .hardware-accelerate { transform: translateZ(0); backface-visibility: hidden; perspective: 1000px; }
+        .will-change-transform { will-change: transform, opacity; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--deep); transition: background 0.8s ease; }
+        body.theme-light ::-webkit-scrollbar-track { background: var(--cream); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); }
+
+        /* ─────────────────────────────────────────
+           CUSTOM CURSOR (Hardware Accelerated)
+        ───────────────────────────────────────── */
+        #cursor-dot { position: fixed; top: 0; left: 0; width: 6px; height: 6px; background-color: var(--gold); border-radius: 50%; pointer-events: none; z-index: 10000; transform: translate3d(-50%, -50%, 0); will-change: transform; }
+        #cursor-ring { position: fixed; top: 0; left: 0; width: 40px; height: 40px; border: 1px solid var(--gold); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate3d(-50%, -50%, 0); transition: width 0.3s, height 0.3s, background-color 0.3s; will-change: transform; }
+        .cursor-hover #cursor-ring { width: 70px; height: 70px; background-color: rgba(201, 168, 76, 0.1); }
+        @media (max-width: 768px) { * { cursor: auto !important; } #cursor-dot, #cursor-ring { display: none !important; } }
+
+        /* ─────────────────────────────────────────
+           PRELOADER (SONIC RING 3D)
+        ───────────────────────────────────────── */
+        #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: var(--deep); z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1); will-change: opacity; }
+        .sonic-ring-container { position: absolute; bottom: -60vh; left: 50%; transform: translateX(-50%); perspective: 1500px; transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
+        .sonic-ring { position: relative; width: 50vh; height: 50vh; transform-style: preserve-3d; animation: spin-ring 1s linear infinite; will-change: transform; }
+        .ring-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border: 4vh solid var(--b); border-radius: 50%; transform: translateZ(var(--z)); box-sizing: border-box; }
+        .ring-layer:not(:first-child):not(:last-child) { box-shadow: inset 0 0 2vh rgba(230, 126, 34, 0.6), 0 0 2vh rgba(230, 126, 34, 0.6); }
+        .ring-layer:first-child, .ring-layer:last-child { box-shadow: inset 0 0 3vh #e67e22, inset 1vh 1vh 2vh rgba(255, 255, 255, 0.8), 0 0 3vh #e67e22, -1vh -1vh 2vh rgba(255, 255, 255, 0.8), 0 0 6vh rgba(241, 196, 15, 0.8); }
+        @keyframes spin-ring { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
+        .sonic-ring-container.fly { transform: translate(-50%, -160vh); }
+        #preloader.fade-out { opacity: 0; pointer-events: none; }
+        .ring-logos { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 25vh; height: 25vh; border-radius: 50%; background: var(--deep); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 0 4vh rgba(0, 0, 0, 0.9) inset; animation: counter-spin-ring 1s linear infinite; will-change: transform; }
+        .ring-logo { position: absolute; width: 80%; height: 80%; object-fit: contain; opacity: 0; animation: logo-swap 3s infinite; will-change: opacity, transform; }
+        .logo-1 { animation-delay: 0s; } .logo-2 { animation-delay: 1s; } .logo-3 { animation-delay: 2s; }
+        @keyframes counter-spin-ring { 0% { transform: translate(-50%, -50%) rotateY(0deg); } 100% { transform: translate(-50%, -50%) rotateY(-360deg); } }
+        @keyframes logo-swap { 0% { opacity: 0; transform: scale(0.7); } 3% { opacity: 1; transform: scale(1); } 30% { opacity: 1; transform: scale(1); } 33.33% { opacity: 0; transform: scale(0.7); } 100% { opacity: 0; } }
+
+        /* ─────────────────────────────────────────
+           GLOBAL UI ELEMENTS & GSAP PREPS
+        ───────────────────────────────────────── */
+        .reveal-up, .stagger-reveal, .timeline-content, .tool-card, .work-item { opacity: 0; visibility: hidden; }
+        
+        #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background-color: var(--gold); width: 0%; z-index: 9999; box-shadow: var(--glow-gold); will-change: width; }
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Cormorant Garamond', serif; font-size: 35vw; color: var(--gold); opacity: 0.06; z-index: 0; pointer-events: none; line-height: 1; white-space: nowrap; will-change: transform; }
+        .section-label { font-family: 'Outfit', sans-serif; color: var(--gold); text-transform: uppercase; letter-spacing: 0.25em; font-size: 0.75rem; margin-bottom: 1.5rem; display: block; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 1.2rem 3rem; border: 1px solid var(--gold); color: var(--soft-white); font-family: 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.8rem; position: relative; overflow: hidden; transition: var(--trans-smooth); z-index: 1; background: transparent; transform: translateZ(0); }
+        body.theme-light .btn { color: var(--ink); }
+        .btn::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--gold); transform: scaleY(0); transform-origin: bottom; transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1); z-index: -1; }
+        .btn:hover { color: var(--deep) !important; box-shadow: var(--glow-gold); }
+        .btn:hover::before { transform: scaleY(1); transform-origin: top; }
+
+        /* ─────────────────────────────────────────
+           MODALS
+        ───────────────────────────────────────── */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(13, 13, 13, 0.85); backdrop-filter: blur(8px); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.5s cubic-bezier(0.25, 1, 0.2, 1); will-change: opacity, visibility; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content { background-color: var(--cream); width: 90%; max-width: 850px; max-height: 85vh; overflow-y: auto; position: relative; padding: 4rem; border: 1px solid var(--gold); transform: translateY(40px); transition: transform 0.6s cubic-bezier(0.25, 1, 0.2, 1); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,0.5); will-change: transform; }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .close-modal-btn { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--ink); transition: color 0.3s; line-height: 1; font-family: 'Outfit', sans-serif; font-weight: 300; }
+        .close-modal-btn:hover { color: var(--gold); transform: scale(1.1); }
+
+        .doc-header { text-align: center; border-bottom: 2px solid var(--ink); padding-bottom: 1rem; margin-bottom: 2rem; }
+        .doc-name { font-family: 'Cormorant Garamond', serif; font-size: 3rem; text-transform: uppercase; line-height: 1; margin-bottom: 0.5rem; }
+        .doc-contact { font-family: 'Outfit', sans-serif; font-size: 0.85rem; letter-spacing: 0.05em; color: #444; }
+        .doc-section-title { font-family: 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: 0.15em; font-size: 1rem; font-weight: 600; border-bottom: 1px solid rgba(26, 22, 18, 0.2); padding-bottom: 0.3rem; margin-bottom: 1rem; margin-top: 2rem; color: var(--gold); }
+        .doc-item { margin-bottom: 1.5rem; }
+        .doc-item-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.2rem; }
+        .doc-item-title { font-weight: 600; font-size: 1.1rem; }
+        .doc-item-location { font-size: 0.9rem; font-style: italic; }
+        .doc-item-subtitle { display: flex; justify-content: space-between; font-size: 0.95rem; font-style: italic; margin-bottom: 0.5rem; color: #444; }
+        .doc-list { padding-left: 1.5rem; font-size: 0.95rem; line-height: 1.5; color: #333; }
+        .doc-list li { margin-bottom: 0.3rem; }
+        .doc-skills p { font-size: 0.95rem; margin-bottom: 0.5rem; line-height: 1.5; color: #333;}
+        .doc-skills strong { font-weight: 600; color: var(--ink); }
+        .modal-content::-webkit-scrollbar { width: 6px; }
+        .modal-content::-webkit-scrollbar-track { background: rgba(232, 220, 200, 0.3); }
+        .modal-content::-webkit-scrollbar-thumb { background: var(--gold); }
+
+        /* ─────────────────────────────────────────
+           PAGE STRUCTURE
+        ───────────────────────────────────────── */
+        .page { display: block; width: 100%; min-height: 100vh; position: relative; overflow: hidden; }
+        .page[data-theme="dark"] { background-color: var(--deep); color: var(--soft-white); }
+        .page[data-theme="light"] { background-color: var(--cream); color: var(--ink); }
+        .container { max-width: 1600px; margin: 0 auto; padding: 150px 5% 100px; position: relative; z-index: 2; }
+
+        @keyframes shimmer-sweep { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        .page[data-theme="dark"] .shimmer-text { background: linear-gradient(to right, var(--soft-white) 20%, var(--gold-light) 50%, var(--soft-white) 80%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: shimmer-sweep 6s linear infinite; }
+        .page[data-theme="light"] .shimmer-text { background: linear-gradient(to right, var(--ink) 20%, var(--gold) 50%, var(--ink) 80%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: shimmer-sweep 6s linear infinite; }
+
+        /* ─────────────────────────────────────────
+           NAVIGATION
+        ───────────────────────────────────────── */
+        nav { position: fixed; top: 0; left: 0; width: 100%; padding: 2.5rem 5%; display: flex; justify-content: space-between; align-items: center; z-index: 8000; transition: var(--trans-smooth); }
+        nav.scrolled { padding: 1.5rem 5%; background-color: rgba(13, 13, 13, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(201, 168, 76, 0.2); }
+        .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--gold); letter-spacing: 0.05em; }
+        .nav-links { display: flex; gap: 2.5rem; }
+        .nav-links a { font-family: 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: 0.15em; font-size: 0.7rem; color: var(--soft-white); position: relative; padding-bottom: 5px; transition: color 0.3s; }
+        .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background-color: var(--gold); transition: width 0.4s ease; }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .nav-links a.active { color: var(--gold); }
+        .hamburger { display: none; flex-direction: column; gap: 6px; background: none; border: none; z-index: 8501; }
+        .hamburger span { display: block; width: 30px; height: 1px; background-color: var(--gold); transition: var(--trans-smooth); }
+        .mobile-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: var(--deep); z-index: 8500; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 3rem; opacity: 0; visibility: hidden; transition: var(--trans-smooth); }
+        .mobile-overlay.active { opacity: 1; visibility: visible; }
+        .mobile-overlay a { font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; color: var(--soft-white); transition: var(--trans-smooth); }
+        .mobile-overlay a:hover { color: var(--gold); text-shadow: var(--glow-gold); }
+        @media (max-width: 768px) { .nav-links { display: none; } .hamburger { display: flex; } }
+
+        /* ─────────────────────────────────────────
+           PAGE MODULES
+        ───────────────────────────────────────── */
+        #hero { display: flex; flex-direction: column; justify-content: center; height: 100vh; position: relative; }
+        .hero-video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden; }
+        .hero-video-bg { width: 100%; height: 130%; position: absolute; top: -15%; background: var(--deep); will-change: transform; }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(13, 13, 13, 0.7); z-index: -1; }
+        .hero-content { text-align: center; width: 100%; position: relative; z-index: 2; padding: 0 5%; }
+        .hero-label { font-family: 'Outfit', sans-serif; color: var(--gold); text-transform: uppercase; letter-spacing: 0.3em; font-size: 0.8rem; margin-bottom: 1.5rem; display: block; }
+        .hero-name { font-size: clamp(4rem, 12vw, 12rem); letter-spacing: 0.08em; line-height: 0.9; margin-bottom: 2rem; text-transform: uppercase; }
+        .typewriter { font-family: 'Outfit', sans-serif; color: var(--gold-light); font-size: clamp(1rem, 2vw, 1.2rem); letter-spacing: 0.1em; height: 30px; }
+        .typewriter-cursor { border-right: 2px solid var(--gold-light); animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { border-color: transparent; } }
+
+        .hero-photo-frame { position: absolute; bottom: 8%; right: 5%; width: clamp(200px, 15vw, 300px); aspect-ratio: 3/4; border: 2px solid var(--gold); box-shadow: inset 0 0 20px rgba(201,168,76,0.3); display: flex; align-items: center; justify-content: center; z-index: 2; overflow: hidden; transform: translateZ(0); }
+        .hero-photo-frame img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: var(--trans-smooth); }
+        .hero-photo-frame:hover img { opacity: 1; transform: scale(1.05); }
+
+        .hero-stats { position: absolute; bottom: 5%; left: 5%; display: flex; gap: 3rem; align-items: center; z-index: 2; }
+        .stat-item { display: flex; flex-direction: column; }
+        .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 3rem; color: var(--gold); line-height: 1; }
+        .stat-label { font-family: 'Outfit', sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--soft-white); margin-top: 0.5rem; }
+        .stat-divider { width: 1px; height: 40px; background-color: var(--gold); opacity: 0.5; }
+
+        .scroll-indicator { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 1px; height: 80px; background: linear-gradient(to bottom, var(--gold), transparent); animation: bounce 2s infinite ease-in-out; z-index: 2; }
+        @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 15px); } }
+
+        .story-grid { display: grid; grid-template-columns: 60% 40%; gap: 5rem; align-items: center; min-height: 60vh; }
+        .story-text h2 { font-size: clamp(3.5rem, 6vw, 6rem); font-weight: 600; margin-bottom: 2.5rem; line-height: 1.1; }
+        .story-text p { font-size: 1.35rem; font-weight: 500; line-height: 1.8; margin-bottom: 1.8rem; max-width: 800px; }
+        
+        .marquee-wrapper { background-color: var(--gold); overflow: hidden; white-space: nowrap; padding: 1rem 0; margin-top: 6rem; margin-bottom: -100px; }
+        .marquee { display: inline-block; font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; letter-spacing: 0.2em; color: var(--deep); text-transform: uppercase; animation: marquee-scroll 20s linear infinite; will-change: transform; }
+        @keyframes marquee-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* TIMELINE */
+        .timeline-container { position: relative; max-width: 1200px; margin: 6rem auto 0; padding: 2rem 0; }
+        .timeline-spine-wrapper { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 2px; height: 100%; background-color: rgba(201,168,76,0.2); z-index: 0;}
+        .timeline-spine { width: 100%; height: 0%; background-color: var(--gold); box-shadow: var(--glow-gold); will-change: height; }
+        .timeline-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8rem; perspective: 1200px; position: relative;}
+        .timeline-item:nth-child(odd) { flex-direction: row-reverse; }
+        .timeline-content { width: 42%; background-color: var(--beige); padding: 3rem; border-top: 3px solid var(--gold); box-shadow: var(--glow-gold); position: relative; z-index: 2; will-change: transform, opacity; }
+        .timeline-year { font-family: 'Outfit', sans-serif; color: var(--gold); font-size: 0.9rem; font-weight: 600; letter-spacing: 0.2em; margin-bottom: 1rem; display: block; }
+        .timeline-title { font-size: 2.5rem; font-weight: 600; margin-bottom: 1.2rem; line-height: 1.1; }
+        .timeline-desc { font-size: 1.15rem; font-weight: 500; line-height: 1.6; margin-bottom: 2rem; }
+        .timeline-dot { width: 20px; height: 20px; background-color: var(--cream); border: 3px solid var(--gold); border-radius: 50%; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 3; box-shadow: var(--glow-gold); }
+        .timeline-image-ph { width: 100%; height: 200px; border: 1px dashed var(--gold); display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 0.8rem; letter-spacing: 0.15em; background-color: rgba(201,168,76,0.05); overflow: hidden; transform: translateZ(0); }
+
+        .skills-header { text-align: center; margin-bottom: 6rem; }
+        .skills-heading { font-size: clamp(3.5rem, 6vw, 6rem); margin-bottom: 1rem; }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5rem; }
+        .tool-card { background-color: var(--glass-bg); border: 1px solid rgba(201, 168, 76, 0.4); padding: 4rem 2rem; text-align: center; backdrop-filter: blur(10px); transition: box-shadow 0.3s, border-color 0.3s; will-change: transform, opacity; transform: translateZ(0); }
+        .tool-card:hover { border-color: var(--gold); box-shadow: var(--glow-gold); background-color: rgba(232, 220, 200, 0.1); }
+        .tool-name { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--soft-white); }
+
+        .work-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4rem; flex-wrap: wrap; gap: 2rem; }
+        .work-heading { font-size: clamp(4rem, 8vw, 7rem); line-height: 1; }
+        .work-filters { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+        .filter-btn { background: none; border: none; font-family: 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.75rem; color: var(--ink); padding: 0.5rem 1.5rem; transition: var(--trans-smooth); border: 1px solid transparent; border-radius: 50px; }
+        .filter-btn:hover, .filter-btn.active { background-color: var(--gold); color: var(--deep); }
+        
+        .masonry-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; grid-auto-flow: dense; perspective: 1200px; }
+        .work-item { position: relative; background-color: var(--beige); border: 1px dashed var(--gold); overflow: hidden; transform-style: preserve-3d; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gold); font-family: 'Outfit', sans-serif; letter-spacing: 0.15em; font-size: 0.8rem; text-align: center; will-change: transform, opacity; }
+        .work-item.tall { grid-row: span 2; height: 650px; }
+        .work-item.vertical { grid-row: span 2; height: 650px;}
+        .work-item.wide { grid-column: span 2; height: 350px; }
+        .work-item.square { height: 350px; }
+        
+        .work-video { width: 100%; height: 100%; object-fit: cover; transform: translateZ(0); }
+        .work-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(201, 168, 76, 0.9) 0%, rgba(232, 201, 122, 0.95) 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.25, 1, 0.2, 1), opacity 0.5s; z-index: 2; pointer-events: none; }
+        
+        /* Interactive Work Cards */
+        .work-item:hover { z-index: 10; box-shadow: 0 40px 80px rgba(201, 168, 76, 0.2); border: 1px solid var(--gold); }
+        .work-item:hover .work-overlay { opacity: 1; transform: translateY(0); }
+        .work-title { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: var(--deep); margin-bottom: 1rem; line-height: 1.1; }
+        .work-view { font-family: 'Outfit', sans-serif; color: var(--deep); text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.85rem; border-bottom: 1px solid var(--deep); font-weight: 500; }
+        
+        .mute-toggle-btn { position: absolute; top: 15px; right: 15px; background: rgba(13, 13, 13, 0.5); backdrop-filter: blur(5px); border: 1px solid var(--gold); color: var(--gold); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; z-index: 20; transition: var(--trans-smooth); cursor: pointer; transform: translateZ(0); }
+        .mute-toggle-btn:hover { background: var(--gold); color: var(--deep); transform: scale(1.1) translateZ(0); }
+
+        .testimonial-item { padding: 3rem; text-align: left; align-items: flex-start; justify-content: flex-start; flex-direction: column; background: var(--beige); border: 1px dashed var(--gold); }
+        .testimonial-quote { font-size: 4rem; color: var(--gold); line-height: 0.5; margin-bottom: 1.5rem; font-family: 'Cormorant Garamond', serif; }
+        .testimonial-text { color: var(--ink); font-size: 1.2rem; font-weight: 500; font-style: italic; margin-bottom: 2.5rem; line-height: 1.6; }
+        .testimonial-role { color: var(--gold); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; font-family: 'Outfit', sans-serif; font-weight: 500; }
+
+        #contact { display: flex; align-items: center; justify-content: center; text-align: center; position: relative; }
+        #particles-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; will-change: transform; }
+        .contact-content { width: 100%; max-width: 1000px; }
+        .contact-heading { font-size: clamp(4rem, 9vw, 8rem); margin-bottom: 1rem; line-height: 1; }
+        .contact-sub { font-family: 'Outfit', sans-serif; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-size: 1.2rem; margin-bottom: 5rem; }
+        .pill-links { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-bottom: 8rem; }
+        .contact-footer { display: flex; flex-direction: column; align-items: center; gap: 2rem; }
+        .footer-line { width: 1px; height: 100px; background-color: var(--gold); }
+        .footer-name { font-family: 'Outfit', sans-serif; letter-spacing: 0.4em; text-transform: uppercase; font-size: 0.85rem; color: var(--gold); }
+        .stamp-badge { position: absolute; bottom: 60px; right: 5%; width: 160px; height: 160px; animation: spin 20s linear infinite; will-change: transform; }
+        .stamp-badge svg { width: 100%; height: 100%; fill: var(--gold); }
+        .stamp-badge text { font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 500; }
+
+        @media (max-width: 1024px) { .masonry-grid { grid-template-columns: repeat(2, 1fr); } .work-item.wide { grid-column: span 1; } }
+        @media (max-width: 900px) { .story-grid { grid-template-columns: 1fr; } .story-visual { height: 300px; display: none; } }
+        @media (max-width: 768px) { .stamp-badge { position: relative; bottom: 0; right: 0; margin-top: 4rem; width: 120px; height: 120px; } }
+        @media (max-width: 600px) { .masonry-grid { grid-template-columns: 1fr; } .work-item.tall, .work-item.vertical, .work-item.square, .work-item.wide { height: 400px; } }
+    </style>
+</head>
+<body>
+
+    <!-- ─────────────────────────────────────────
+         GLOBAL UI & MODALS
+    ───────────────────────────────────────── -->
+    <div id="scroll-progress"></div>
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- PRELOADER (SONIC RING 3D) -->
+    <div id="preloader">
+        <div class="sonic-ring-container hardware-accelerate">
+            <div class="sonic-ring">
+                <div class="ring-layer" style="--z: -4vh; --b: #c2950c;"></div>
+                <div class="ring-layer" style="--z: -3vh; --b: #d4a613;"></div>
+                <div class="ring-layer" style="--z: -2vh; --b: #e5b719;"></div>
+                <div class="ring-layer" style="--z: -1vh; --b: #f1c40f;"></div>
+                <div class="ring-layer" style="--z: 0vh; --b: #ffe047;"></div>
+                <div class="ring-layer" style="--z: 1vh; --b: #f1c40f;"></div>
+                <div class="ring-layer" style="--z: 2vh; --b: #e5b719;"></div>
+                <div class="ring-layer" style="--z: 3vh; --b: #d4a613;"></div>
+                <div class="ring-layer" style="--z: 4vh; --b: #c2950c;"></div>
+                <div class="ring-logos">
+                    <img src="image_2a53e3.png" class="ring-logo logo-1 hardware-accelerate" alt="Premiere Pro" decoding="async">
+                    <img src="image_2a5424.png" class="ring-logo logo-2 hardware-accelerate" alt="DaVinci Resolve" decoding="async">
+                    <img src="image_2a53a5.png" class="ring-logo logo-3 hardware-accelerate" alt="Vegas Pro" decoding="async">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESUME MODAL -->
+    <div id="resume-modal" class="modal-overlay hardware-accelerate">
+        <div class="modal-content interactive-area">
+            <button id="close-resume" class="close-modal-btn interactive">&times;</button>
+            <div class="doc-header">
+                <h2 class="doc-name">Farhaan Shaikh</h2>
+                <div class="doc-contact">Hyderabad, Telangana | P: +91 9182123657 | Portfolio.com</div>
+            </div>
+
+            <div class="doc-section">
+                <div class="doc-section-title">Education</div>
+                <div class="doc-item">
+                    <div class="doc-item-header">
+                        <span class="doc-item-title">Mahindra University</span>
+                        <span class="doc-item-location">Hyderabad, Telangana</span>
+                    </div>
+                    <div class="doc-item-subtitle"><span>Bachelor of Business Administration</span><span>August 2023 - May 2026</span></div>
+                    <ul class="doc-list">
+                        <li>Cumulative GPA: 7.2/10</li>
+                        <li>Relevant Coursework: Data Warehousing, Brand and Branding, Digital Marketing, Ecommerce Analysis, Marketing Analysis.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="doc-section">
+                <div class="doc-section-title">Work Experience</div>
+                <div class="doc-item">
+                    <div class="doc-item-header">
+                        <span class="doc-item-title">Technical Producer & Video Editor</span>
+                        <span class="doc-item-location">Hyderabad</span>
+                    </div>
+                    <div class="doc-item-subtitle"><span>MU Vocalyx (Podcast)</span><span>2024 - 2026</span></div>
+                    <ul class="doc-list">
+                        <li>Initiated high-throughput video editing processes for a prominent podcast series, greatly enhancing broadcasting quality and audience engagement.</li>
+                        <li>Supervised field production shoots, handling camera operations, technical issues, and audio gear.</li>
+                        <li>Headed several technical initiatives to enhance production efficiency and optimize content distribution.</li>
+                    </ul>
+                </div>
+                <div class="doc-item">
+                    <div class="doc-item-header">
+                        <span class="doc-item-title">Freelance Video Editor & Content Creator</span>
+                        <span class="doc-item-location">New York, NY (Remote)</span>
+                    </div>
+                    <div class="doc-item-subtitle"><span>Self Employed</span><span>2020 - 2024</span></div>
+                    <ul class="doc-list">
+                        <li>Scaled a freelance editing Social Media Account, leveraging Twitter and Instagram for aggressive client acquisition and professional networking.</li>
+                        <li>Produced high retention video content for a personal YouTube channel, showcasing advanced post-production techniques.</li>
+                        <li>Utilized a comprehensive editing stack including Premiere Pro, After Effects, DaVinci Resolve, Vegas Pro, and CapCut to deliver diverse client projects.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="doc-section">
+                <div class="doc-section-title">University Projects</div>
+                <div class="doc-item">
+                    <div class="doc-item-header"><span class="doc-item-title">Principals Of Marketing</span><span class="doc-item-location">Feb 2024</span></div>
+                    <ul class="doc-list">
+                        <li>Designed and implemented campaigns on a gaming café that did not have a website nor reach online.</li>
+                        <li>Created more campaigns for the gaming café to be more involved with college students.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="doc-section">
+                <div class="doc-section-title">Activities</div>
+                <div class="doc-item">
+                    <div class="doc-item-header"><span class="doc-item-title">Intracollege PowerLifting</span><span class="doc-item-location">Boston, MA</span></div>
+                    <div class="doc-item-subtitle"><span>Volunteer</span><span>Sep 2023</span></div>
+                    <ul class="doc-list"><li>Volunteered during a powerlifting intracollege competition.</li></ul>
+                </div>
+            </div>
+
+            <div class="doc-section">
+                <div class="doc-section-title">Additional</div>
+                <div class="doc-skills">
+                    <p><strong>Technical Skills:</strong> Advanced in Premiere Pro, After Effects, DaVinci Resolve, Vegas Pro, CapCut; Proficient in Power BI, Orange (Predictive AI); Learning Unity (Game Engine), Photoshop, Canva, Pixlr.</p>
+                    <p><strong>Languages:</strong> Fluent in English, Hindi</p>
+                    <p><strong>Certifications & Training:</strong> Digital Marketing Certified (HubSpot Academy); AI-Powered Business Analytics (National University of Singapore); Forage Job Simulation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CAPSTONE MODAL -->
+    <div id="capstone-modal" class="modal-overlay hardware-accelerate">
+        <div class="modal-content interactive-area" style="max-width: 1000px;">
+            <button id="close-capstone" class="close-modal-btn interactive">&times;</button>
+            <div class="doc-header">
+                <h2 class="doc-name">Cafe Adda</h2>
+                <div class="doc-contact">Systems Optimization & Web App Deployment</div>
+            </div>
+            <div class="doc-section">
+                <div class="doc-section-title">Final Project Report</div>
+                <p style="margin-bottom: 1.5rem; font-size: 0.95rem; color: #444; font-family: 'Outfit', sans-serif;">Comprehensive systems-thinking approach diagnosing and resolving operational inefficiencies at a campus-based food outlet. Includes research, behavioral interventions, and custom tech deployment.</p>
+                <div style="width: 100%; height: 65vh; border: 1px solid var(--gold); margin-bottom: 1.5rem; background: #fff;">
+                    <iframe src="RuFaRiHaAd_SectionA.pdf" width="100%" height="100%" style="border: none;" loading="lazy"></iframe>
+                </div>
+                <a href="RuFaRiHaAd_SectionA.pdf" target="_blank" class="btn interactive" style="width: 100%; margin-bottom: 3rem; text-align: center; display: block; color: var(--deep); border-color: var(--deep);">Open Full PDF in New Tab &nearr;</a>
+            </div>
+            <div class="doc-section">
+                <div class="doc-section-title">Buzzer System UI Gallery</div>
+                <p style="margin-bottom: 1.5rem; font-size: 0.95rem; color: #444; font-family: 'Outfit', sans-serif;">Custom-built web-based token notification application eliminating wait-time congestion.</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; align-items: start;">
+                    <img src="Screenshot 2026-05-26 165922.png" alt="App Screen - Home" style="width: 100%; border: 1px solid var(--gold); border-radius: 8px;" decoding="async" loading="lazy">
+                    <img src="Screenshot 2026-05-26 165925.png" alt="App Screen - Enter Token" style="width: 100%; border: 1px solid var(--gold); border-radius: 8px;" decoding="async" loading="lazy">
+                    <img src="Screenshot 2026-05-26 165937.png" alt="App Screen - Staff Login" style="width: 100%; border: 1px solid var(--gold); border-radius: 8px;" decoding="async" loading="lazy">
+                    <img src="Screenshot 2026-05-26 170003.png" alt="App Screen - Dashboard" style="width: 100%; border: 1px solid var(--gold); border-radius: 8px;" decoding="async" loading="lazy">
+                    <img src="Screenshot 2026-05-26 170009.png" alt="App Screen - Queue" style="width: 100%; border: 1px solid var(--gold); border-radius: 8px;" decoding="async" loading="lazy">
+                    <img src="Screenshot 2026-05-26 170016.png" alt="App Screen - Waiting" style="width: 100%; border: 1px solid var(--gold); border-radius: 8px;" decoding="async" loading="lazy">
+                    <img src="Screenshot 2026-05-26 170023.png" alt="Order Ready" style="width: 100%; border: 1px solid var(--gold); border-radius: 8px;" decoding="async" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="main-nav" class="hardware-accelerate">
+        <a href="#hero" class="logo nav-link interactive">Farhaan Shaikh</a>
+        <div class="nav-links">
+            <a href="#story" class="nav-link interactive">About</a>
+            <a href="#journey" class="nav-link interactive">Experience</a>
+            <a href="#skills" class="nav-link interactive">Tools</a>
+            <a href="#work" class="nav-link interactive">Work</a>
+            <a href="#praise" class="nav-link interactive">Praise</a>
+            <a href="#contact" class="nav-link interactive">Contact</a>
+        </div>
+        <button class="hamburger interactive"><span></span><span></span><span></span></button>
+    </nav>
+
+    <!-- ─────────────────────────────────────────
+         MAIN CONTENT SCROLL PAGE
+    ───────────────────────────────────────── -->
+    <main id="app">
+        
+        <!-- SECTION: HERO -->
+        <section id="hero" class="page" data-theme="dark">
+            <div class="hero-video-wrapper">
+                <div class="hero-video-bg"></div>
+            </div>
+            <div class="hero-overlay"></div>
+            
+            <div class="hero-content">
+                <span class="hero-label reveal-up" data-speed="0.2">Statement of Purpose &middot; Creator &middot; Storyteller</span>
+                <h1 class="hero-name serif shimmer-text reveal-up" data-speed="0.5">Farhaan Shaikh</h1>
+                <div class="typewriter reveal-up" data-speed="0.8">
+                    <span id="type-text"></span><span class="typewriter-cursor"></span>
+                </div>
+            </div>
+
+            <div class="hero-photo-frame interactive reveal-up" data-speed="1.2">
+                <img src="WhatsApp Image 2026-03-20 at 1.05.42 AM.jpeg" alt="Farhaan Shaikh" decoding="async">
+            </div>
+
+            <div class="hero-stats reveal-up" data-speed="0.3">
+                <div class="stat-item"><span class="stat-num">3+</span><span class="stat-label">Years Editing</span></div>
+                <div class="stat-divider"></div>
+                <div class="stat-item"><span class="stat-num">50+</span><span class="stat-label">Projects</span></div>
+                <div class="stat-divider"></div>
+                <div class="stat-item"><span class="stat-num">2021</span><span class="stat-label">Started</span></div>
+            </div>
+
+            <div class="scroll-indicator reveal-up"></div>
+        </section>
+
+        <!-- SECTION: ABOUT MY STORY -->
+        <section id="story" class="page" data-theme="light">
+            <div class="watermark hardware-accelerate" data-speed="0.5">01</div>
+            <div class="container">
+                <span class="section-label reveal-up">Statement of Purpose</span>
+                
+                <div class="story-grid">
+                    <div class="story-text">
+                        <h2 class="reveal-up shimmer-text">Where It All Began</h2>
+                        <div class="reveal-up">
+                            <p>It started in 2020. No massive setups or agency backing—just raw ambition, a Twitter account, and an Instagram page. I dove headfirst into the freelance video editing scene, hunting for potential clients and learning the rhythm of visual storytelling frame by frame.</p>
+                            <p>From starting a professional YouTube channel to post-production edits, every project taught me something new. I expanded my scope, stepping away from the screen to volunteer as a project lead for a local powerlifting community, proving that leadership translates across mediums.</p>
+                            <p>Recently, that vision took me global. A summer course (College) in Singapore leveled up my game in social media management and AI integration, cementing my belief that the grind never stops evolving.</p>
+                        </div>
+                        
+                        <div class="pill-links reveal-up" style="justify-content: flex-start; margin-bottom: 0; margin-top: 3rem;">
+                            <button id="open-resume-btn" class="btn interactive" style="padding: 1rem 2rem; font-size: 0.75rem;">View Full Resume</button>
+                            <a href="https://www.linkedin.com/in/farhaan-shaikh-a675ab313/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3Bh5Nz8GFbTcqGx6zFHAhO7w%3D%3D" target="_blank" rel="noopener noreferrer" class="btn interactive" style="padding: 1rem 2rem; font-size: 0.75rem;">Farhaan Shaikh | LinkedIn</a>
+                        </div>
+                    </div>
+                    
+                    <div class="story-visual reveal-up interactive hardware-accelerate" style="padding: 0; border: 1px solid var(--gold); overflow: hidden; background: var(--deep);" data-speed="0.8">
+                        <!-- Play constantly (when visible) via IntersectionObserver -->
+                        <video src="0526.mp4" loop muted playsinline preload="metadata" class="work-video" style="width: 100%; height: 100%; object-fit: contain;"></video>
+                        <button class="mute-toggle-btn interactive" aria-label="Toggle Audio">🔇</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="marquee-wrapper">
+                <div class="marquee hardware-accelerate">
+                    FARHAAN SHAIKH &middot; EDITING &middot; MOTION &middot; STORYTELLING &middot; VISUAL CRAFT &middot; FARHAAN SHAIKH &middot; EDITING &middot; MOTION &middot; STORYTELLING &middot; VISUAL CRAFT &middot; 
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: EXPERIENCE THE JOURNEY -->
+        <section id="journey" class="page" data-theme="light">
+            <div class="watermark hardware-accelerate" data-speed="0.6">02</div>
+            <div class="container">
+                <span class="section-label reveal-up" style="text-align: center;">Experience & Impact</span>
+                <h2 class="serif reveal-up shimmer-text" style="font-size: clamp(3rem, 6vw, 5rem); margin-bottom: 2rem; text-align: center;">Every Step. Every Frame.</h2>
+
+                <div class="timeline-container" id="timeline-container">
+                    <div class="timeline-spine-wrapper">
+                        <div class="timeline-spine hardware-accelerate" id="timeline-spine"></div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content stagger-reveal interactive">
+                            <span class="timeline-year">SUMMER 2025</span>
+                            <h3 class="timeline-title serif">Summer Course (College)</h3>
+                            <p class="timeline-desc">Singapore. Conducted advanced data analysis using Power BI and executed predictive analysis leveraging AI models with Orange.</p>
+                            <div class="timeline-image-ph" style="padding: 8px; border-style: solid;">
+                                <img src="WhatsApp Image 2026-03-20 at 1.03.15 AM.jpeg" alt="Singapore Presentation" style="height: 100%; width: 100%; object-fit: cover; opacity: 0.9;" decoding="async">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content stagger-reveal interactive">
+                            <span class="timeline-year">2024 &mdash; 2025</span>
+                            <h3 class="timeline-title serif">Podcast Technical Member</h3>
+                            <p class="timeline-desc">Joined a major podcast channel. Handled heavy video editing, assisted in on-site production shoots, and led multiple technical projects.</p>
+                            <div class="timeline-image-ph" style="padding: 8px; gap: 8px; border-style: solid;">
+                                <img src="WhatsApp Image 2026-03-20 at 1.02.16 AM (1).jpeg" alt="Podcast 1" style="height: 100%; width: 50%; object-fit: cover; opacity: 0.9;" decoding="async">
+                                <img src="WhatsApp Image 2026-03-20 at 1.02.16 AM.jpeg" alt="Podcast 2" style="height: 100%; width: 50%; object-fit: cover; opacity: 0.9;" decoding="async">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content stagger-reveal interactive">
+                            <span class="timeline-year">2022 &mdash; 2024</span>
+                            <h3 class="timeline-title serif">Project Lead & Volunteer</h3>
+                            <p class="timeline-desc">Powerlifting Community. Stepped away from the screens to lead local projects, coordinate events, and build team management skills.</p>
+                            <div class="timeline-image-ph" style="padding: 8px; gap: 8px; border-style: solid;">
+                                <img src="WhatsApp Image 2026-03-20 at 1.02.17 AM.jpeg" alt="Volunteer 1" style="height: 100%; width: 50%; object-fit: cover; opacity: 0.9;" decoding="async">
+                                <img src="WhatsApp Image 2026-03-20 at 1.02.16 AM (2).jpeg" alt="Volunteer 2" style="height: 100%; width: 50%; object-fit: cover; opacity: 0.9;" decoding="async">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content stagger-reveal interactive">
+                            <span class="timeline-year">2020 &mdash; 2022</span>
+                            <h3 class="timeline-title serif">Freelance Editor & Creator</h3>
+                            <p class="timeline-desc">The genesis. Started freelance editing, networked relentlessly across Twitter and IG to secure clients, and ran a personal YouTube channel.</p>
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: 100%; height: 180px; border: 1px solid var(--gold); padding: 4px; background: rgba(201,168,76,0.05);">
+                                <div style="background: var(--deep); display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-weight: 600; border: 1px solid rgba(201,168,76,0.2);">Pr</div>
+                                <div style="background: var(--deep); display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-weight: 600; border: 1px solid rgba(201,168,76,0.2);">Ae</div>
+                                <div style="background: var(--deep); display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-weight: 600; border: 1px solid rgba(201,168,76,0.2);">Da</div>
+                                <div style="background: var(--deep); display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-weight: 600; border: 1px solid rgba(201,168,76,0.2);">Vp</div>
+                                <div style="background: var(--deep); display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-weight: 600; border: 1px solid rgba(201,168,76,0.2);">Cc</div>
+                                <div style="background: var(--deep); display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-weight: 600; border: 1px solid rgba(201,168,76,0.2);">Ps</div>
+                                <div style="background: var(--deep); display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-weight: 600; border: 1px solid rgba(201,168,76,0.2);">Px</div>
+                                <div style="background: var(--deep); display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 0.7rem; font-weight: 500; border: 1px solid rgba(201,168,76,0.2); text-transform: uppercase;">Stack</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: SKILLS & TOOLS -->
+        <section id="skills" class="page" data-theme="dark">
+            <div class="watermark hardware-accelerate" data-speed="0.4">03</div>
+            <div class="container">
+                <div class="skills-header">
+                    <span class="section-label reveal-up">Core Competencies</span>
+                    <h2 class="skills-heading serif reveal-up shimmer-text">Tools & Credentials</h2>
+                </div>
+
+                <div class="tools-grid">
+                    <div class="tool-card interactive"><h3 class="tool-name">Premiere Pro</h3></div>
+                    <div class="tool-card interactive"><h3 class="tool-name">After Effects</h3></div>
+                    <div class="tool-card interactive"><h3 class="tool-name">DaVinci Resolve</h3></div>
+                    <div class="tool-card interactive"><h3 class="tool-name">Vegas Pro</h3></div>
+                    <div class="tool-card interactive"><h3 class="tool-name">CapCut</h3></div>
+                    <div class="tool-card interactive"><h3 class="tool-name">Canva</h3></div>
+                    <div class="tool-card interactive"><h3 class="tool-name">Photoshop</h3></div>
+                    <div class="tool-card interactive"><h3 class="tool-name">Pixlr</h3></div>
+                </div>
+
+                <div class="skills-header" style="margin-top: 6rem; margin-bottom: 4rem;">
+                    <h2 class="serif reveal-up shimmer-text" style="font-size: 3rem;">Certifications & Value Add</h2>
+                </div>
+                
+                <div class="tools-grid">
+                    <a href="46b39c5a5fbe4a99b09f148c86ca0422.png" target="_blank" class="tool-card interactive" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-decoration: none;">
+                        <div style="width: 100%; height: 140px; margin-bottom: 1.5rem; overflow: hidden; border: 1px solid rgba(201,168,76,0.2); border-radius: 4px; background: #fff;">
+                            <img src="46b39c5a5fbe4a99b09f148c86ca0422.png" alt="HubSpot Cert" style="width: 100%; height: 100%; object-fit: contain; padding: 10px;" decoding="async">
+                        </div>
+                        <h3 class="tool-name" style="font-size: 1.2rem;">Digital Marketing</h3>
+                        <span class="section-label" style="margin-top: 1rem; margin-bottom: 0;">HubSpot Certification &nearr;</span>
+                    </a>
+                    <div class="tool-card interactive">
+                        <h3 class="tool-name" style="font-size: 1.2rem;">Forage Job Sim</h3>
+                        <span class="section-label" style="margin-top: 1rem; margin-bottom: 0;">Value-Added Course</span>
+                    </div>
+                    <div class="tool-card interactive">
+                        <h3 class="tool-name" style="font-size: 1.2rem;">Spreadsheets & Stats</h3>
+                        <span class="section-label" style="margin-top: 1rem; margin-bottom: 0;">Core Courses Highlight</span>
+                    </div>
+                    <div class="tool-card interactive">
+                        <h3 class="tool-name" style="font-size: 1.2rem;">Sanskrit & Hindi</h3>
+                        <span class="section-label" style="margin-top: 1rem; margin-bottom: 0;">Languages Known</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: WORK SHOWCASE -->
+        <section id="work" class="page" data-theme="light">
+            <div class="watermark hardware-accelerate" data-speed="0.7">04</div>
+            <div class="container">
+                
+                <div class="work-header reveal-up">
+                    <div>
+                        <span class="section-label">Selected Works</span>
+                        <h2 class="work-heading serif shimmer-text">Projects & Research</h2>
+                    </div>
+                    <div class="work-filters interactive">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="capstone">Capstone</button>
+                        <button class="filter-btn" data-filter="video">Video</button>
+                    </div>
+                </div>
+
+                <div class="masonry-grid">
+                    
+                    <!-- Syctek Project -->
+                    <div class="work-item vertical syctek interactive" data-speed="0.1">
+                        <!-- Play constantly (when visible) via IntersectionObserver -->
+                        <video src="syctek3232.mp4" loop muted playsinline preload="metadata" class="work-video"></video>
+                        <button class="mute-toggle-btn interactive" aria-label="Toggle Audio">🔇</button>
+                        <div class="work-overlay">
+                            <h3 class="work-title">Syctek</h3>
+                            <span class="work-view">Visual Production</span>
+                        </div>
+                    </div>
+
+                    <!-- Magnolia Project -->
+                    <div class="work-item square magnolia interactive" data-speed="0.3">
+                        <video src="magnolia bs.mp4" loop muted playsinline preload="metadata" class="work-video"></video>
+                        <button class="mute-toggle-btn interactive" aria-label="Toggle Audio">🔇</button>
+                        <div class="work-overlay">
+                            <h3 class="work-title">Magnolia</h3>
+                            <span class="work-view">Creative Edit</span>
+                        </div>
+                    </div>
+
+                    <!-- Capstone Project -->
+                    <div id="open-capstone-btn" class="work-item wide capstone interactive" data-speed="0.2">
+                        <div style="width: 100%; height: 100%; background: var(--deep); display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem;">
+                            <h3 class="serif shimmer-text" style="font-size: 3.5rem; margin-bottom: 0.5rem; text-align: center; color: var(--soft-white);">Cafe Adda</h3>
+                            <span style="font-family: 'Outfit', sans-serif; color: var(--gold); font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase;">Optimization & Web App</span>
+                        </div>
+                        <div class="work-overlay">
+                            <h3 class="work-title">Capstone Project</h3>
+                            <span class="work-view">View Report & Gallery &rarr;</span>
+                        </div>
+                    </div>
+
+                    <!-- DUMA Video Project -->
+                    <div class="work-item square video interactive" data-speed="0.4">
+                        <video src="assignment (final).mp4" loop muted playsinline preload="metadata" class="work-video"></video>
+                        <button class="mute-toggle-btn interactive" aria-label="Toggle Audio">🔇</button>
+                        <div class="work-overlay">
+                            <h3 class="work-title" style="font-family: 'Bangers', cursive; font-size: 3.5rem; letter-spacing: 4px; text-transform: uppercase;">DUMA</h3>
+                            <span class="work-view">View &rarr;</span>
+                        </div>
+                    </div>
+
+                    <!-- Podcast Final -->
+                    <div class="work-item tall video interactive" data-speed="0.15">
+                        <video src="PodcastFinal.mp4" loop muted playsinline preload="metadata" class="work-video"></video>
+                        <button class="mute-toggle-btn interactive" aria-label="Toggle Audio">🔇</button>
+                        <div class="work-overlay">
+                            <h3 class="work-title">The Grind Podcast</h3>
+                            <span class="work-view">View &rarr;</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Vegas Pro Edit -->
+                    <div class="work-item square video interactive" data-speed="0.35">
+                        <video src="finall exe1n.mp4" loop muted playsinline preload="metadata" class="work-video"></video>
+                        <button class="mute-toggle-btn interactive" aria-label="Toggle Audio">🔇</button>
+                        <div class="work-overlay">
+                            <h3 class="work-title">Vegas Pro Edit</h3>
+                            <span class="work-view">View &rarr;</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Powerlifting Photo -->
+                    <div class="work-item square interactive" data-speed="0.25">
+                        <img src="WhatsApp Image 2026-03-20 at 1.02.17 AM.jpeg" alt="Event Coverage" style="width: 100%; height: 100%; object-fit: cover;" decoding="async">
+                        <div class="work-overlay">
+                            <h3 class="work-title">Powerlifting Meet</h3>
+                            <span class="work-view">View &rarr;</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: RECOMMENDATIONS (PRAISE) -->
+        <section id="praise" class="page" data-theme="light">
+            <div class="watermark hardware-accelerate" data-speed="0.5">05</div>
+            <div class="container">
+                <span class="section-label reveal-up" style="text-align: center;">Words from the Industry</span>
+                <h2 class="serif reveal-up shimmer-text" style="font-size: clamp(3rem, 6vw, 5rem); margin-bottom: 5rem; text-align: center;">Recommendations</h2>
+
+                <div class="masonry-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                    <div class="work-item square interactive testimonial-item">
+                        <span class="testimonial-quote">"</span>
+                        <p class="testimonial-text">Farhaan is an exceptional talent. His ability to blend analytical rigor with creative visual storytelling is unmatched.</p>
+                        <div><span class="testimonial-role">University Professor</span></div>
+                    </div>
+                    <div class="work-item square interactive testimonial-item">
+                        <span class="testimonial-quote">"</span>
+                        <p class="testimonial-text">His technical contributions to our podcast were absolutely game-changing. He elevated the entire broadcast standard.</p>
+                        <div><span class="testimonial-role">Podcast Host / SME</span></div>
+                    </div>
+                    <div class="work-item square interactive testimonial-item">
+                        <span class="testimonial-quote">"</span>
+                        <p class="testimonial-text">Farhaan's edits completely transformed my channel's retention rates. His grasp of pacing, motion graphics, and visual storytelling is top-tier.</p>
+                        <div><span class="testimonial-role">Freelance Client / Creator</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: CONTACT -->
+        <section id="contact" class="page" data-theme="dark">
+            <!-- Hardware accelerated canvas that only renders when visible -->
+            <canvas id="particles-canvas" class="hardware-accelerate"></canvas>
+            
+            <div class="container contact-content">
+                <h2 class="contact-heading serif shimmer-text reveal-up">Let's Create Something</h2>
+                <p class="contact-sub reveal-up">Reach out. Let's talk.</p>
+                
+                <div class="pill-links reveal-up">
+                    <a href="https://www.instagram.com/farhaanlyx" target="_blank" class="btn interactive">Instagram</a>
+                    <a href="https://www.youtube.com/@flexcore_" target="_blank" class="btn interactive">YouTube</a>
+                    <a href="mailto:hello@example.com" class="btn interactive">Email</a>
+                </div>
+                
+                <div class="contact-footer reveal-up">
+                    <div class="footer-line"></div>
+                    <span class="footer-name">Farhaan Shaikh</span>
+                </div>
+                
+                <div class="stamp-badge interactive">
+                    <svg viewBox="0 0 100 100">
+                        <path id="circlePath" d="M 50, 50 m -35, 0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0" fill="none"/>
+                        <text><textPath href="#circlePath" startOffset="0%">FARHAAN SHAIKH &middot; EDITOR &middot; CREATOR &middot; STORYTELLER &middot; EST. 2020 &middot;</textPath></text>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // GSAP Registration
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. SONIC RING PRELOADER LOGIC
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            const ringContainer = document.querySelector('.sonic-ring-container');
+            
+            setTimeout(() => {
+                ringContainer.classList.add('fly');
+                setTimeout(() => {
+                    preloader.classList.add('fade-out');
+                    setTimeout(typeWriter, 500);
+                    ScrollTrigger.refresh();
+                }, 750);
+            }, 300);
+        });
+
+        // 2. CUSTOM CURSOR (Hardware Accelerated & Ultra Smooth)
+        const dot = document.getElementById('cursor-dot'), ring = document.getElementById('cursor-ring');
+        let mX = -100, mY = -100, dX = -100, dY = -100, rX = -100, rY = -100;
+        document.addEventListener('mousemove', e => { mX = e.clientX; mY = e.clientY; });
+        function animateCursor() {
+            dX += (mX - dX) * 0.4; dY += (mY - dY) * 0.4;
+            rX += (mX - rX) * 0.08; rY += (mY - rY) * 0.08;
+            dot.style.transform = `translate3d(calc(${dX}px - 50%), calc(${dY}px - 50%), 0)`;
+            ring.style.transform = `translate3d(calc(${rX}px - 50%), calc(${rY}px - 50%), 0)`;
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        const interactives = document.querySelectorAll('.interactive, a, button');
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+        });
+
+        // 3. MODAL LOGIC
+        const modals = [
+            { btn: 'open-resume-btn', close: 'close-resume', modal: 'resume-modal' },
+            { btn: 'open-capstone-btn', close: 'close-capstone', modal: 'capstone-modal' }
+        ];
+
+        modals.forEach(({btn, close, modal}) => {
+            const openEl = document.getElementById(btn);
+            const closeEl = document.getElementById(close);
+            const modalEl = document.getElementById(modal);
+            if(openEl && closeEl && modalEl) {
+                openEl.addEventListener('click', e => { e.preventDefault(); modalEl.classList.add('active'); });
+                closeEl.addEventListener('click', () => modalEl.classList.remove('active'));
+                modalEl.addEventListener('click', e => { if(e.target === modalEl) modalEl.classList.remove('active'); });
+            }
+        });
+
+        // 4. SMART VIDEO INTERSECTION OBSERVER (HYPER-OPTIMIZED 60/120fps)
+        // This removes clunky JS hovers and ensures videos play constantly BUT ONLY when visible
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const vid = entry.target;
+                if (entry.isIntersecting) {
+                    const playPromise = vid.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            // Suppress browser autoplay restrictions or interrupt errors silently
+                        });
+                    }
+                } else {
+                    vid.pause();
+                }
+            });
+        }, { rootMargin: '100px 0px' }); // Load/play right before coming into viewport
+
+        document.querySelectorAll('.work-video').forEach(video => {
+            videoObserver.observe(video);
+        });
+
+        // Mute/Unmute Toggle
+        document.querySelectorAll('.mute-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                const container = btn.closest('.work-item') || btn.closest('.story-visual');
+                const video = container.querySelector('video');
+                if(video) { video.muted = !video.muted; btn.textContent = video.muted ? '🔇' : '🔊'; }
+            });
+        });
+
+        // 5. GSAP SCROLL ANIMATIONS (PARALLEL/PARALLAX SCROLLING)
+        gsap.utils.toArray('[data-speed]').forEach(el => {
+            const speed = parseFloat(el.getAttribute('data-speed'));
+            gsap.to(el, {
+                y: -100 * speed,
+                ease: "none",
+                scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: 1 }
+            });
+        });
+
+        gsap.to(".hero-video-bg", {
+            yPercent: 20, ease: "none",
+            scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: true }
+        });
+
+        gsap.utils.toArray('.reveal-up').forEach(el => {
+            gsap.fromTo(el, { opacity: 0, y: 50, visibility: 'visible' }, {
+                opacity: 1, y: 0, duration: 1, ease: "power3.out", force3D: true,
+                scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" }
+            });
+        });
+
+        gsap.to("#timeline-spine", {
+            height: "100%", ease: "none",
+            scrollTrigger: { trigger: "#timeline-container", start: "top 60%", end: "bottom 60%", scrub: true }
+        });
+
+        gsap.utils.toArray('.timeline-content').forEach((el, i) => {
+            const xOffset = i % 2 === 0 ? 50 : -50;
+            gsap.fromTo(el, { opacity: 0, x: xOffset, visibility: 'visible' }, {
+                opacity: 1, x: 0, duration: 1, ease: "power3.out", force3D: true,
+                scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" }
+            });
+        });
+
+        ScrollTrigger.batch(".tool-card", {
+            onEnter: batch => gsap.fromTo(batch, {opacity: 0, y: 40, visibility: 'visible'}, {opacity: 1, y: 0, stagger: 0.1, duration: 0.8, ease: "power3.out", force3D: true}),
+            onLeaveBack: batch => gsap.to(batch, {opacity: 0, y: 40, force3D: true})
+        });
+
+        ScrollTrigger.batch(".work-item", {
+            onEnter: batch => gsap.fromTo(batch, {opacity: 0, y: 80, visibility: 'visible'}, {opacity: 1, y: 0, stagger: 0.15, duration: 1, ease: "power3.out", force3D: true}),
+            onLeaveBack: batch => gsap.to(batch, {opacity: 0, y: 80, force3D: true})
+        });
+
+        // 6. SCROLL PROGRESS & NAV
+        const progressBar = document.getElementById('scroll-progress');
+        const nav = document.getElementById('main-nav');
+        const navLinks = document.querySelectorAll('.nav-links a');
+        const sections = document.querySelectorAll('.page');
+
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 50);
+            const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+            progressBar.style.width = `${(window.scrollY / scrollable) * 100}%`;
+
+            let current = ''; let currentTheme = 'dark';
+            sections.forEach(section => {
+                if (scrollY >= (section.offsetTop - 300)) {
+                    current = section.getAttribute('id');
+                    currentTheme = section.getAttribute('data-theme');
+                }
+            });
+            document.body.classList.toggle('theme-light', currentTheme === 'light');
+            navLinks.forEach(l => { l.classList.toggle('active', l.getAttribute('href') === `#${current}`); });
+        }, { passive: true }); // passive true for scroll listener optimization
+
+        // 7. MOBILE MENU
+        const hamburger = document.querySelector('.hamburger'), overlay = document.querySelector('.mobile-overlay');
+        hamburger.addEventListener('click', () => overlay.classList.toggle('active'));
+        document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', () => overlay.classList.remove('active')));
+
+        // 8. TYPEWRITER EFFECT
+        window.typeWriter = function() {
+            const typeText = "Video Editor & Creative.";
+            const typeEl = document.getElementById('type-text');
+            if (!typeEl || typeEl.textContent.length > 0) return;
+            let charIndex = 0;
+            function type() {
+                if (charIndex < typeText.length) {
+                    typeEl.textContent += typeText.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(type, 100);
+                }
+            }
+            type();
+        }
+
+        // 9. 3D TILT EFFECT (WORK CARDS)
+        document.querySelectorAll('.work-item').forEach(item => {
+            item.addEventListener('mousemove', (e) => {
+                const rect = item.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                item.style.transform = `perspective(1200px) rotateY(${x * 16}deg) rotateX(${-y * 16}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+            item.addEventListener('mouseleave', () => item.style.transform = `perspective(1200px) rotateY(0deg) rotateX(0deg) scale3d(1, 1, 1)`);
+        });
+
+        // 10. GOLD DUST PARTICLES (Intersection Observer Optimized)
+        const canvas = document.getElementById('particles-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let canvasActive = false;
+            
+            // Only draw particles when the contact section is actually visible!
+            const contactObserver = new IntersectionObserver((entries) => {
+                canvasActive = entries[0].isIntersecting;
+            });
+            contactObserver.observe(document.getElementById('contact'));
+
+            function initParticles() {
+                canvas.width = window.innerWidth; canvas.height = window.innerHeight; particles = [];
+                for(let i=0; i<30; i++) particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2 + 0.5, vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2 });
+            }
+            function animateCanvas() {
+                if(canvasActive) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = 'rgba(201, 168, 76, 0.3)';
+                    particles.forEach(p => {
+                        p.x += p.vx; p.y += p.vy;
+                        if(p.x < 0) p.x = canvas.width; if(p.x > canvas.width) p.x = 0;
+                        if(p.y < 0) p.y = canvas.height; if(p.y > canvas.height) p.y = 0;
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+                    });
+                }
+                requestAnimationFrame(animateCanvas);
+            }
+            initParticles(); animateCanvas(); window.addEventListener('resize', initParticles);
+        }
+    </script>
+</body>
+</html>
